@@ -1,5 +1,2 @@
 node_modules
 .env
-.next/dev
-.next/
-out/

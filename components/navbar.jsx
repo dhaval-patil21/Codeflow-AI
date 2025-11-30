@@ -16,7 +16,7 @@ export default function Navbar() {
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center group-hover:shadow-lg transition-shadow">
               <Code2 className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="font-bold text-lg hidden sm:inline">CodeFlow AI</span>
+            <span className="font-bold text-lg  sm:inline">CodeFlow AI</span>
           </Link>
 
           {/* Desktop Navigation */}

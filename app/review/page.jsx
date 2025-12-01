@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -8,6 +9,7 @@ import FileUpload from "@/components/file-upload"
 import LanguageSelector from "@/components/language-selector"
 import AnalysisPanel from "@/components/analysis-panel"
 import { Zap } from "lucide-react"
+import { addReview } from "@/lib/localStorage"
 
 export default function ReviewPage() {
   const [code, setCode] = useState("")
@@ -38,6 +40,14 @@ export default function ReviewPage() {
       const data = await response.json()
       console.log("[v0] Review response:", data)
       setAnalysis(data)
+
+      addReview({
+        title: `${language.charAt(0).toUpperCase() + language.slice(1)} Code Review`,
+        language,
+        code: code.substring(0, 500),
+        score: data.overallScore || 0,
+        analysis: data,
+      })
     } catch (error) {
       console.error("[v0] Error during review:", error)
       alert(`Error running review: ${error.message}`)

@@ -1,22 +1,63 @@
+
 "use client"
 
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { BarChart3, Code, FileText, TrendingUp } from "lucide-react"
+import { useState, useEffect } from "react"
+import { getAnalytics, getAllHistory } from "@/lib/localStorage"
 
 export default function DashboardPage() {
-  const stats = [
-    { icon: Code, label: "Code Reviews", value: "24", change: "+12%" },
-    { icon: FileText, label: "Docs Generated", value: "18", change: "+8%" },
-    { icon: BarChart3, label: "Avg Quality Score", value: "82/100", change: "+5%" },
-    { icon: TrendingUp, label: "Total Analysis", value: "42", change: "+20%" },
-  ]
+  const [analytics, setAnalytics] = useState(null)
+  const [recentActivity, setRecentActivity] = useState([])
+  const [mounted, setMounted] = useState(false)
 
-  const recentActivity = [
-    { type: "review", title: "React Component Review", time: "2 hours ago", language: "jsx" },
-    { type: "docs", title: "API Documentation Generated", time: "5 hours ago", language: "typescript" },
-    { type: "review", title: "Python Script Analysis", time: "1 day ago", language: "python" },
-    { type: "docs", title: "README Documentation", time: "2 days ago", language: "markdown" },
+  useEffect(() => {
+    setMounted(true)
+    const analyticsData = getAnalytics()
+    setAnalytics(analyticsData)
+
+    const history = getAllHistory()
+    setRecentActivity(history.slice(0, 5))
+  }, [])
+
+  if (!mounted || !analytics) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 py-12">
+          <div className="max-w-7xl mx-auto px-4">Loading...</div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  const stats = [
+    {
+      icon: Code,
+      label: "Code Reviews",
+      value: analytics.totalReviews.toString(),
+      change: analytics.totalReviews > 0 ? "+100%" : "0%",
+    },
+    {
+      icon: FileText,
+      label: "Docs Generated",
+      value: analytics.totalDocs.toString(),
+      change: analytics.totalDocs > 0 ? "+100%" : "0%",
+    },
+    {
+      icon: BarChart3,
+      label: "Avg Quality Score",
+      value: `${analytics.averageScore}/100`,
+      change: analytics.averageScore > 70 ? "Good" : "Fair",
+    },
+    {
+      icon: TrendingUp,
+      label: "Total Analysis",
+      value: analytics.totalAnalysis.toString(),
+      change: analytics.totalAnalysis > 0 ? `+${analytics.totalAnalysis}` : "0",
+    },
   ]
 
   return (
@@ -60,18 +101,26 @@ export default function DashboardPage() {
               <h2 className="text-lg font-semibold">Recent Activity</h2>
             </div>
             <div className="divide-y divide-border">
-              {recentActivity.map((activity, idx) => (
-                <div
-                  key={idx}
-                  className="px-6 py-4 hover:bg-secondary/30 transition-colors flex items-center justify-between"
-                >
-                  <div className="flex-1">
-                    <p className="font-medium mb-1">{activity.title}</p>
-                    <p className="text-sm text-muted-foreground">{activity.time}</p>
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity, idx) => (
+                  <div
+                    key={idx}
+                    className="px-6 py-4 hover:bg-secondary/30 transition-colors flex items-center justify-between"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium mb-1">{activity.title || activity.type}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(activity.createdAt || activity.timestamp).toLocaleString()}
+                      </p>
+                    </div>
+                    <span className="px-3 py-1 bg-secondary rounded text-xs font-medium">{activity.language}</span>
                   </div>
-                  <span className="px-3 py-1 bg-secondary rounded text-xs font-medium">{activity.language}</span>
+                ))
+              ) : (
+                <div className="px-6 py-8 text-center text-muted-foreground">
+                  No recent activity. Start a code review or generate documentation.
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>

@@ -1,40 +1,42 @@
+
 "use client"
 
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
-import { Calendar, FileText, Code, Trash2 } from "lucide-react"
-import { useState } from "react"
+import { Calendar, FileText, Code, Trash2, Eye } from "lucide-react"
+import { useState, useEffect } from "react"
+import { getAllHistory, deleteReview, deleteDocs } from "@/lib/localStorage"
 
 export default function HistoryPage() {
-  const [history, setHistory] = useState([
-    {
-      id: 1,
-      type: "review",
-      title: "React Hook Implementation",
-      date: new Date("2024-11-30"),
-      language: "javascript",
-      score: 82,
-    },
-    {
-      id: 2,
-      type: "docs",
-      title: "API Documentation Generated",
-      date: new Date("2024-11-29"),
-      language: "typescript",
-      lines: 245,
-    },
-    {
-      id: 3,
-      type: "review",
-      title: "Python Data Processing",
-      date: new Date("2024-11-28"),
-      language: "python",
-      score: 78,
-    },
-  ])
+  const [history, setHistory] = useState([])
+  const [selectedItem, setSelectedItem] = useState(null)
+  const [mounted, setMounted] = useState(false)
 
-  const handleDelete = (id) => {
+  useEffect(() => {
+    setMounted(true)
+    const allHistory = getAllHistory()
+    setHistory(allHistory)
+  }, [])
+
+  const handleDelete = (id, type) => {
+    if (type === "review") {
+      deleteReview(id)
+    } else {
+      deleteDocs(id)
+    }
     setHistory(history.filter((item) => item.id !== id))
+  }
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 py-12">
+          <div className="max-w-4xl mx-auto px-4">Loading...</div>
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   return (
@@ -72,19 +74,22 @@ export default function HistoryPage() {
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            {item.date.toLocaleDateString()}
+                            {new Date(item.createdAt).toLocaleDateString()}
                           </span>
                           {item.score && <span>Score: {item.score}/100</span>}
-                          {item.lines && <span>{item.lines} lines</span>}
                         </div>
                       </div>
                     </div>
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="px-3 py-2 bg-secondary rounded hover:bg-secondary/80 transition-colors text-sm font-medium">
+                      <button
+                        onClick={() => setSelectedItem(item)}
+                        className="px-3 py-2 bg-secondary rounded hover:bg-secondary/80 transition-colors text-sm font-medium flex items-center gap-2"
+                      >
+                        <Eye className="w-4 h-4" />
                         View
                       </button>
                       <button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => handleDelete(item.id, item.type)}
                         className="p-2 hover:bg-destructive/10 rounded transition-colors text-destructive"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -114,6 +119,49 @@ export default function HistoryPage() {
                 >
                   Generate Docs
                 </a>
+              </div>
+            </div>
+          )}
+
+          {/* Detail Modal */}
+          {selectedItem && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-card rounded-lg max-w-2xl max-h-[80vh] overflow-y-auto w-full p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-2">{selectedItem.title}</h2>
+                    <p className="text-sm text-muted-foreground">{new Date(selectedItem.createdAt).toLocaleString()}</p>
+                  </div>
+                  <button onClick={() => setSelectedItem(null)} className="text-xl font-bold hover:opacity-70">
+                    ✕
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {selectedItem.type === "review" && selectedItem.analysis && (
+                    <div>
+                      <h3 className="font-semibold mb-2">Analysis Results</h3>
+                      <div className="bg-secondary/50 p-4 rounded text-sm whitespace-pre-wrap overflow-auto max-h-96">
+                        {typeof selectedItem.analysis === "object"
+                          ? JSON.stringify(selectedItem.analysis, null, 2)
+                          : selectedItem.analysis}
+                      </div>
+                    </div>
+                  )}
+                  {selectedItem.type === "docs" && selectedItem.markdown && (
+                    <div>
+                      <h3 className="font-semibold mb-2">Generated Documentation</h3>
+                      <div className="bg-secondary/50 p-4 rounded text-sm whitespace-pre-wrap overflow-auto max-h-96">
+                        {selectedItem.markdown}
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-semibold mb-2">Original Code</h3>
+                    <div className="bg-secondary/50 p-4 rounded text-sm whitespace-pre-wrap overflow-auto max-h-96 font-mono">
+                      {selectedItem.code}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}

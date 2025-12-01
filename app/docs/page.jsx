@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -8,6 +9,7 @@ import FileUpload from "@/components/file-upload"
 import LanguageSelector from "@/components/language-selector"
 import MarkdownViewer from "@/components/markdown-viewer"
 import { FileText } from "lucide-react"
+import { addDocs } from "@/lib/localStorage"
 
 export default function DocsPage() {
   const [code, setCode] = useState("")
@@ -30,6 +32,13 @@ export default function DocsPage() {
       })
       const data = await response.json()
       setMarkdown(data.markdown || "")
+
+      addDocs({
+        title: `${language.charAt(0).toUpperCase() + language.slice(1)} Documentation`,
+        language,
+        code: code.substring(0, 500),
+        markdown: data.markdown || "",
+      })
     } catch (error) {
       console.error("Error:", error)
       alert("Error generating documentation")

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import Link from "next/link"
-import { ArrowRight, Zap, Code, FileText } from "lucide-react"
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+import Link from "next/link";
+import { ArrowRight, Zap, Code, FileText } from "lucide-react";
 
 export default function Home() {
   return (
@@ -23,11 +23,12 @@ export default function Home() {
                 ✨ Powered by AI
               </span>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-                Intelligent Code Review & Documentation
+                Your AI Partner for Code Review & Documentation
               </h1>
               <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-                Analyze your code instantly and generate comprehensive documentation. Powered by OpenAI and Groq for
-                lightning-fast AI insights.
+                Transform your code into insights and documentation — instantly,
+                with AI. Your code, decoded. AI turns complexity into clarity
+                within seconds.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -35,7 +36,8 @@ export default function Home() {
                   href="/review"
                   className="px-6 py-3 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-lg font-semibold hover:shadow-lg transition-shadow flex items-center gap-2 group"
                 >
-                  Start Review <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  Start Review{" "}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   href="/docs"
@@ -52,9 +54,12 @@ export default function Home() {
         <section className="py-20 bg-card">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4">Powerful Features</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+                Powerful Features
+              </h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Everything you need for professional code analysis and documentation
+                Everything you need for professional code analysis and
+                documentation
               </p>
             </div>
 
@@ -66,8 +71,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Code Review</h3>
                 <p className="text-muted-foreground">
-                  Get instant AI-powered code reviews with detailed suggestions, performance tips, and security
-                  recommendations.
+                  Get instant AI-powered code reviews with detailed suggestions,
+                  performance tips, and security recommendations.
                 </p>
               </div>
 
@@ -78,7 +83,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Doc Generation</h3>
                 <p className="text-muted-foreground">
-                  Automatically generate comprehensive README files, API documentation, and code comments.
+                  Automatically generate comprehensive README files, API
+                  documentation, and code comments.
                 </p>
               </div>
 
@@ -89,7 +95,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Lightning Fast</h3>
                 <p className="text-muted-foreground">
-                  Powered by the latest AI models for blazing-fast analysis and generation of your code insights.
+                  Powered by the latest AI models for blazing-fast analysis and
+                  generation of your code insights.
                 </p>
               </div>
             </div>
@@ -100,16 +107,36 @@ export default function Home() {
         <section className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4">How It Works</h2>
-              <p className="text-muted-foreground text-lg">Simple steps to get professional code insights</p>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+                How It Works
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Simple steps to get professional code insights
+              </p>
             </div>
 
             <div className="grid md:grid-cols-4 gap-8">
               {[
-                { step: 1, title: "Upload Code", desc: "Paste your code or upload a file" },
-                { step: 2, title: "Select Tool", desc: "Choose review or documentation" },
-                { step: 3, title: "AI Analysis", desc: "Get instant AI-powered insights" },
-                { step: 4, title: "Export", desc: "Download results in any format" },
+                {
+                  step: 1,
+                  title: "Upload Code",
+                  desc: "Paste your code or upload a file",
+                },
+                {
+                  step: 2,
+                  title: "Select Tool",
+                  desc: "Choose review or documentation",
+                },
+                {
+                  step: 3,
+                  title: "AI Analysis",
+                  desc: "Get instant AI-powered insights",
+                },
+                {
+                  step: 4,
+                  title: "Export",
+                  desc: "Download results in any format",
+                },
               ].map((item) => (
                 <div key={item.step} className="text-center">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground flex items-center justify-center font-bold text-lg mx-auto mb-4">
@@ -126,9 +153,12 @@ export default function Home() {
         {/* CTA Section */}
         <section className="py-20 bg-gradient-to-r from-primary/10 to-accent/10 border-y border-border">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to Improve Your Code?</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Ready to Improve Your Code?
+            </h2>
             <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-              Start using CodeFlow today and get instant AI-powered code reviews and documentation.
+              Start using CodeFlow today and get instant AI-powered code reviews
+              and documentation.
             </p>
             <Link
               href="/review"
@@ -141,5 +171,5 @@ export default function Home() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }

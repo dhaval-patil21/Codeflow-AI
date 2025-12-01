@@ -49,12 +49,12 @@ export default function Navbar() {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
+            {/* <Link
               href="/login"
               className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors"
             >
               Sign In
-            </Link>
+            </Link> */}
             <Link
               href="/review"
               className="px-4 py-2 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-lg text-sm font-medium hover:shadow-lg transition-shadow"
@@ -100,12 +100,12 @@ export default function Navbar() {
               Dashboard
             </Link>
             <div className="pt-4 flex flex-col gap-2">
-              <Link
+              {/* <Link
                 href="/login"
                 className="block px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary transition-colors text-center"
               >
                 Sign In
-              </Link>
+              </Link> */}
               <Link
                 href="/review"
                 className="block px-3 py-2 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-lg text-sm font-medium text-center"

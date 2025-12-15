@@ -11,7 +11,7 @@ export async function POST(request) {
 
     const apiKey = process.env.GROQ_API_KEY
     if (!apiKey) {
-      console.error("[v0] GROQ_API_KEY not found in environment")
+      console.error(" GROQ_API_KEY not found in environment")
       return Response.json({ error: "API key not configured" }, { status: 500 })
     }
 
@@ -38,7 +38,7 @@ Generate complete markdown documentation with these sections:
 
 Make the documentation clear, well-structured, and professional. Include code examples where relevant.`
 
-    console.log("[v0] Sending docs request to Groq API")
+    console.log(" Sending docs request to Groq API")
 
     const message = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile", // Updated to currently supported model
@@ -51,18 +51,18 @@ Make the documentation clear, well-structured, and professional. Include code ex
       ],
     })
 
-    console.log("[v0] Groq docs response received")
+    console.log(" Groq docs response received")
 
     const markdown = message.choices[0]?.message?.content || ""
 
     if (!markdown) {
-      console.error("[v0] Empty docs response from Groq")
+      console.error(" Empty docs response from Groq")
       return Response.json({ error: "Empty response from AI" }, { status: 500 })
     }
 
     return Response.json({ markdown })
   } catch (error) {
-    console.error("[v0] Docs API error:", error.message)
+    console.error(" Docs API error:", error.message)
     return Response.json({ error: error.message || "Failed to generate documentation" }, { status: 500 })
   }
 }

@@ -85,27 +85,27 @@ Provide your analysis in JSON format ONLY, with no additional text. Use exactly 
       ],
     })
 
-    console.log("[v0] Groq response received")
+    console.log(" Groq response received")
 
     const responseText = message.choices[0]?.message?.content || ""
     if (!responseText) {
-      console.error("[v0] Empty response from Groq")
+      console.error(" Empty response from Groq")
       return Response.json({ error: "Empty response from AI" }, { status: 500 })
     }
 
     // Parse JSON response from Groq
     const jsonMatch = responseText.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
-      console.error("[v0] Failed to extract JSON from response:", responseText.substring(0, 200))
+      console.error(" Failed to extract JSON from response:", responseText.substring(0, 200))
       return Response.json({ error: "Failed to parse analysis response" }, { status: 500 })
     }
 
     const analysis = JSON.parse(jsonMatch[0])
-    console.log("[v0] Analysis parsed successfully")
+    console.log(" Analysis parsed successfully")
 
     return Response.json(analysis)
   } catch (error) {
-    console.error("[v0] Review API error:", error.message)
+    console.error(" Review API error:", error.message)
     return Response.json(
       { error: error.message || "Failed to analyze code" },
       { status: 500 }

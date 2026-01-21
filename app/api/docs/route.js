@@ -41,7 +41,7 @@ Make the documentation clear, well-structured, and professional. Include code ex
     console.log(" Sending docs request to Groq API")
 
     const message = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile", // Updated to currently supported model
+      model: "llama-3.3-70b-versatile", 
       max_tokens: 4000,
       messages: [
         {

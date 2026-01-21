@@ -11,7 +11,7 @@ export async function POST(request) {
 
     const apiKey = process.env.GROQ_API_KEY
     if (!apiKey) {
-      console.error("[v0] GROQ_API_KEY not found in environment")
+      console.error(" GROQ_API_KEY not found in environment")
       return Response.json({ error: "API key not configured" }, { status: 500 })
     }
 
@@ -72,10 +72,10 @@ Provide your analysis in JSON format ONLY, with no additional text. Use exactly 
   ]
 }`
 
-    console.log("[v0] Sending request to Groq API")
+    console.log("Sending request to Groq API")
 
     const message = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile", // Updated to currently supported model
+      model: "llama-3.3-70b-versatile", 
       max_tokens: 4000,
       messages: [
         {

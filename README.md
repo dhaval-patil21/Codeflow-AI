@@ -1,7 +1,7 @@
 🚀 CodeFlow AI
 AI-powered Code Reviewer & Technical Documentation Generator
 
-CodeFlow AI is a developer productivity tool built to review code instantly, provide real-time suggestions, detect bugs & optimizations, and generate high-quality technical documentation — powered by Groq API, Next.js, Tailwind CSS, Radix UI, and Monaco Editor.
+CodeFlow AI is a developer productivity tool built to review code instantly, provide real-time suggestions, detect bugs & optimizations, and generate high-quality technical documentation — powered by Groq API, Next.js, Tailwind CSS, Radix UI.
 
 Live Demo:
 👉 https://codeflowapp.vercel.app/

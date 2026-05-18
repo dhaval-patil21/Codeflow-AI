@@ -3,27 +3,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { apiClient } from './api-client';
 
-interface User {
-  id: number;
-  email: string;
-  created_at: string;
-}
+const AuthContext = createContext(undefined);
 
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  isAuthenticated: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load token and user on mount
@@ -38,26 +22,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email, password) => {
     const response = await apiClient.login(email, password);
     if (response.error) {
       throw new Error(response.error);
     }
 
-    const { access_token, user: userData } = response.data as any;
+    const { access_token, user: userData } = response.data;
     localStorage.setItem('token', access_token);
     localStorage.setItem('user', JSON.stringify(userData));
     setToken(access_token);
     setUser(userData);
   };
 
-  const signup = async (email: string, password: string) => {
+  const signup = async (email, password) => {
     const response = await apiClient.signup(email, password);
     if (response.error) {
       throw new Error(response.error);
     }
 
-    const { access_token, user: userData } = response.data as any;
+    const { access_token, user: userData } = response.data;
     localStorage.setItem('token', access_token);
     localStorage.setItem('user', JSON.stringify(userData));
     setToken(access_token);

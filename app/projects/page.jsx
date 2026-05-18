@@ -30,7 +30,7 @@ export default function ProjectsPage() {
     try {
       const response = await apiClient.getProjects();
       if (!response.error && response.data) {
-        setProjects(response.data as any[]);
+        setProjects(response.data);
       }
     } catch (err) {
       console.error("Error fetching projects:", err);
@@ -39,7 +39,7 @@ export default function ProjectsPage() {
     }
   };
 
-  const handleCreateProject = async (e: React.FormEvent) => {
+  const handleCreateProject = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) {
       alert("Project name is required");
@@ -57,7 +57,7 @@ export default function ProjectsPage() {
         return;
       }
 
-      setProjects([...projects, response.data as any]);
+      setProjects([...projects, response.data]);
       setFormData({ name: "", description: "" });
       setShowForm(false);
     } catch (err) {
@@ -68,7 +68,7 @@ export default function ProjectsPage() {
     }
   };
 
-  const handleDeleteProject = async (projectId: number) => {
+  const handleDeleteProject = async (projectId) => {
     if (!confirm("Are you sure you want to delete this project?")) {
       return;
     }

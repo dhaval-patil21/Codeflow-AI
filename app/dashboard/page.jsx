@@ -2,31 +2,69 @@
 
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import { BarChart3, Code, FileText, TrendingUp } from "lucide-react";
+import { BarChart3, Code, FileText, TrendingUp, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getAnalytics, getAllHistory } from "@/lib/localStorage";
+import { useAuth } from "@/lib/auth-context";
+import { apiClient } from "@/lib/api-client";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const [analytics, setAnalytics] = useState(null);
-  const [recentActivity, setRecentActivity] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [mounted, setMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated, user, logout } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
+    if (!isAuthenticated && !mounted) {
+      router.push('/auth/login');
+      return;
+    }
+    
     setMounted(true);
-    const analyticsData = getAnalytics();
-    setAnalytics(analyticsData);
+    fetchDashboardData();
+  }, [isAuthenticated, mounted, router]);
 
-    const history = getAllHistory();
-    setRecentActivity(history.slice(0, 5));
-  }, []);
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
+    try {
+      const reviewsResponse = await apiClient.getReviews();
+      if (!reviewsResponse.error && reviewsResponse.data) {
+        const reviewsList = reviewsResponse.data as any[];
+        setReviews(reviewsList);
+        
+        // Calculate analytics
+        const avgScore = reviewsList.length > 0
+          ? Math.round(reviewsList.reduce((sum, r) => sum + (r.score || 0), 0) / reviewsList.length)
+          : 0;
+        
+        setAnalytics({
+          totalReviews: reviewsList.length,
+          totalDocs: 0,
+          averageScore: avgScore,
+          totalAnalysis: reviewsList.length,
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  if (!mounted || !analytics) {
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
+
+  if (!mounted || isLoading || !analytics) {
     return (
       <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
         <Navbar />
         <main className="flex-1 py-12">
           <div className="max-w-7xl mx-auto px-4 text-gray-900 dark:text-white">
-            Loading...
+            Loading dashboard...
           </div>
         </main>
         <Footer />
@@ -67,13 +105,22 @@ export default function DashboardPage() {
       <main className="flex-1 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2 text-gray-900 dark:text-white">
-              Dashboard
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400">
-              Your code analysis statistics and recent activity
-            </p>
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-2 text-gray-900 dark:text-white">
+                Dashboard
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400">
+                Welcome, {user?.email}
+              </p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
           </div>
 
           {/* Stats Grid */}
@@ -108,35 +155,37 @@ export default function DashboardPage() {
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Recent Activity
+                Recent Code Reviews
               </h2>
             </div>
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {recentActivity.length > 0 ? (
-                recentActivity.map((activity, idx) => (
+              {reviews.length > 0 ? (
+                reviews.slice(0, 5).map((review, idx) => (
                   <div
                     key={idx}
                     className="px-6 py-4 hover:bg-gray-100/30 dark:hover:bg-gray-800/30 transition-colors flex items-center justify-between"
                   >
                     <div className="flex-1">
                       <p className="font-medium mb-1 text-gray-900 dark:text-white">
-                        {activity.title || activity.type}
+                        Code Review
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {new Date(
-                          activity.createdAt || activity.timestamp
-                        ).toLocaleString()}
+                        {new Date(review.created_at).toLocaleString()}
                       </p>
                     </div>
-                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded text-xs font-medium">
-                      {activity.language}
-                    </span>
+                    <div className="flex items-center gap-4">
+                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded text-xs font-medium">
+                        {review.language}
+                      </span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        Score: {review.score}/100
+                      </span>
+                    </div>
                   </div>
                 ))
               ) : (
                 <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-                  No recent activity. Start a code review or generate
-                  documentation.
+                  No reviews yet. Start a code review to get started.
                 </div>
               )}
             </div>

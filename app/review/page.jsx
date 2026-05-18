@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import CodeEditor from "@/components/code-editor";
@@ -8,13 +9,39 @@ import FileUpload from "@/components/file-upload";
 import LanguageSelector from "@/components/language-selector";
 import AnalysisPanel from "@/components/analysis-panel";
 import { Zap } from "lucide-react";
-import { addReview } from "@/lib/localStorage";
+import { useAuth } from "@/lib/auth-context";
+import { apiClient } from "@/lib/api-client";
 
 export default function ReviewPage() {
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
   const [analysis, setAnalysis] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [projectId, setProjectId] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/auth/login");
+    } else {
+      fetchProjects();
+    }
+  }, [isAuthenticated, router]);
+
+  const fetchProjects = async () => {
+    const response = await apiClient.getProjects();
+    if (!response.error && response.data) {
+      const projectsList = response.data as any[];
+      setProjects(projectsList);
+      if (projectsList.length > 0) {
+        setProjectId(projectsList[0].id);
+        setSelectedProject(projectsList[0]);
+      }
+    }
+  };
 
   const handleRunReview = async () => {
     if (!code.trim()) {
@@ -22,38 +49,25 @@ export default function ReviewPage() {
       return;
     }
 
+    if (!projectId) {
+      alert("Please select or create a project first");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      console.log("Starting code review request");
-      const response = await fetch("/api/review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, language }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`
-        );
+      console.log("[v0] Starting code review request");
+      const response = await apiClient.analyzeCode(projectId, code, language);
+      
+      if (response.error) {
+        throw new Error(response.error);
       }
 
-      const data = await response.json();
-      console.log("  Review response:", data);
-      setAnalysis(data);
-
-      addReview({
-        title: `${
-          language.charAt(0).toUpperCase() + language.slice(1)
-        } Code Review`,
-        language,
-        code: code.substring(0, 500),
-        score: data.overallScore || 0,
-        analysis: data,
-      });
+      console.log("[v0] Review response:", response.data);
+      setAnalysis(response.data);
     } catch (error) {
-      console.error("  Error during review:", error);
-      alert(`Error running review: ${error.message}`);
+      console.error("[v0] Error during review:", error);
+      alert(`Error running review: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -98,6 +112,33 @@ export default function ReviewPage() {
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Left Panel - Input */}
             <div className="space-y-4">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-4 rounded-lg">
+                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  Select Project
+                </label>
+                <select
+                  value={projectId || ""}
+                  onChange={(e) => {
+                    const selected = projects.find(p => p.id === parseInt(e.target.value));
+                    setProjectId(parseInt(e.target.value));
+                    setSelectedProject(selected || null);
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-background text-foreground"
+                >
+                  <option value="">Choose a project...</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+                </select>
+                {projects.length === 0 && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    Create a project in your dashboard first
+                  </p>
+                )}
+              </div>
+
               <div className="flex gap-2 flex-wrap">
                 <LanguageSelector value={language} onChange={setLanguage} />
                 <FileUpload onFileLoad={handleFileLoad} />

@@ -31,19 +31,18 @@ export default function DashboardPage() {
     try {
       const reviewsResponse = await apiClient.getReviews();
       if (!reviewsResponse.error && reviewsResponse.data) {
-        const reviewsList = reviewsResponse.data as any[];
-        setReviews(reviewsList);
+        setReviews(reviewsResponse.data);
         
         // Calculate analytics
-        const avgScore = reviewsList.length > 0
-          ? Math.round(reviewsList.reduce((sum, r) => sum + (r.score || 0), 0) / reviewsList.length)
+        const avgScore = reviewsResponse.data.length > 0
+          ? Math.round(reviewsResponse.data.reduce((sum, r) => sum + (r.score || 0), 0) / reviewsResponse.data.length)
           : 0;
         
         setAnalytics({
-          totalReviews: reviewsList.length,
+          totalReviews: reviewsResponse.data.length,
           totalDocs: 0,
           averageScore: avgScore,
-          totalAnalysis: reviewsList.length,
+          totalAnalysis: reviewsResponse.data.length,
         });
       }
     } catch (err) {

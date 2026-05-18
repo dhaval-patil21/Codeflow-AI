@@ -34,11 +34,10 @@ export default function ReviewPage() {
   const fetchProjects = async () => {
     const response = await apiClient.getProjects();
     if (!response.error && response.data) {
-      const projectsList = response.data as any[];
-      setProjects(projectsList);
-      if (projectsList.length > 0) {
-        setProjectId(projectsList[0].id);
-        setSelectedProject(projectsList[0]);
+      setProjects(response.data);
+      if (response.data.length > 0) {
+        setProjectId(response.data[0].id);
+        setSelectedProject(response.data[0]);
       }
     }
   };
